@@ -3,6 +3,7 @@ import {
   CheckSquare, BarChart2, Calendar as CalendarIcon, LogOut, Bell, User, 
   Settings, UserCircle, Image as ImageIcon, X, ChevronDown, Sparkles
 } from 'lucide-react';
+import { AuthContext } from '../context/AuthContext';
 import { AnimatePresence, motion } from 'framer-motion';
 
 const Navbar = ({ currentView, setCurrentView }) => {
