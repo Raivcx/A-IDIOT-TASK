@@ -1,7 +1,7 @@
 import React, { useContext, useState, useRef, useEffect } from 'react';
 import { 
   CheckSquare, BarChart2, Calendar as CalendarIcon, LogOut, Bell, User, 
-  Settings, UserCircle, Image as ImageIcon, X, ChevronDown, Sparkles
+  Settings, UserCircle, Image as ImageIcon, X, ChevronDown, Sparkles, Loader2
 } from 'lucide-react';
 import { AuthContext } from '../context/AuthContext';
 import { AnimatePresence, motion } from 'framer-motion';
