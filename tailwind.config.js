@@ -11,6 +11,8 @@ export default {
         deepBlue: '#16161e',
         neonCyan: '#7dcfff',
         neonViolet: '#bb9af7',
+        'accent-blue': '#00d2ff',
+        'accent-purple': '#9d50bb',
       }
     },
   },
