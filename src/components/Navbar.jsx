@@ -11,12 +11,14 @@ const Navbar = ({ currentView, setCurrentView }) => {
   const [showDropdown, setShowDropdown] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [newName, setNewName] = useState('');
+  const [avatarUrl, setAvatarUrl] = useState('');
   const [isSaving, setIsSaving] = useState(false);
   const dropdownRef = useRef(null);
 
   useEffect(() => {
     if (showEditModal) {
       setNewName(user?.user_metadata?.display_name || user?.email?.split('@')[0] || '');
+      setAvatarUrl(user?.user_metadata?.avatar_url || '');
     }
   }, [showEditModal, user]);
 
@@ -43,7 +45,10 @@ const Navbar = ({ currentView, setCurrentView }) => {
     if (!newName.trim()) return;
     setIsSaving(true);
     try {
-      await updateProfile({ display_name: newName });
+      await updateProfile({ 
+        display_name: newName,
+        avatar_url: avatarUrl 
+      });
       setShowEditModal(false);
     } catch (error) {
       console.error("Erro ao atualizar perfil:", error);
@@ -107,8 +112,12 @@ const Navbar = ({ currentView, setCurrentView }) => {
                 onClick={() => setShowDropdown(!showDropdown)}
                 className="flex items-center gap-3 pl-2 pr-4 py-2 bg-white/5 hover:bg-white/10 border border-white/5 rounded-2xl transition-all"
               >
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-accent-blue to-accent-purple flex items-center justify-center shadow-lg">
-                  <User className="text-white" size={20} />
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-accent-blue to-accent-purple flex items-center justify-center shadow-lg overflow-hidden">
+                  {user?.user_metadata?.avatar_url ? (
+                    <img src={user.user_metadata.avatar_url} alt="Avatar" className="w-full h-full object-cover" />
+                  ) : (
+                    <User className="text-white" size={20} />
+                  )}
                 </div>
                 <div className="hidden lg:block text-left mr-2">
                   <p className="text-xs font-black text-white uppercase tracking-wider leading-none mb-1">{userName}</p>
@@ -140,7 +149,10 @@ const Navbar = ({ currentView, setCurrentView }) => {
                       >
                         <UserCircle size={18} /> Editar Perfil
                       </button>
-                      <button className="w-full flex items-center gap-3 px-4 py-3 text-sm font-bold text-gray-400 hover:text-white hover:bg-white/5 rounded-xl transition-all">
+                      <button 
+                        onClick={() => { setShowEditModal(true); setShowDropdown(false); }}
+                        className="w-full flex items-center gap-3 px-4 py-3 text-sm font-bold text-gray-400 hover:text-white hover:bg-white/5 rounded-xl transition-all"
+                      >
                         <ImageIcon size={18} /> Alterar Foto
                       </button>
                       <button className="w-full flex items-center gap-3 px-4 py-3 text-sm font-bold text-gray-400 hover:text-white hover:bg-white/5 rounded-xl transition-all">
@@ -192,12 +204,26 @@ const Navbar = ({ currentView, setCurrentView }) => {
 
               <div className="space-y-6 relative z-10">
                 <div className="flex flex-col items-center gap-4 mb-8">
-                  <div className="w-24 h-24 rounded-[2rem] bg-gradient-to-br from-accent-blue to-accent-purple p-1">
-                    <div className="w-full h-full bg-[#12131a] rounded-[1.8rem] flex items-center justify-center">
-                      <User className="text-white" size={40} />
+                  <div className="w-24 h-24 rounded-[2rem] bg-gradient-to-br from-accent-blue to-accent-purple p-1 shadow-2xl overflow-hidden">
+                    <div className="w-full h-full bg-[#12131a] rounded-[1.8rem] flex items-center justify-center overflow-hidden">
+                      {avatarUrl ? (
+                        <img src={avatarUrl} alt="Preview" className="w-full h-full object-cover" />
+                      ) : (
+                        <User className="text-white" size={40} />
+                      )}
                     </div>
                   </div>
-                  <button className="text-sm font-bold text-accent-blue hover:underline">Trocar imagem</button>
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest pl-2">URL da Imagem de Perfil</label>
+                  <input 
+                    type="text" 
+                    value={avatarUrl}
+                    onChange={(e) => setAvatarUrl(e.target.value)}
+                    className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-white font-bold focus:outline-none focus:border-accent-blue focus:ring-1 focus:ring-accent-blue transition-all"
+                    placeholder="https://exemplo.com/foto.jpg"
+                  />
                 </div>
 
                 <div className="space-y-2">
