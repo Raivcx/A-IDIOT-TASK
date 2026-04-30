@@ -7,6 +7,7 @@ const Login = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -19,9 +20,15 @@ const Login = () => {
       if (isLogin) {
         await login(email, password);
       } else {
+        if (password !== confirmPassword) {
+          setError('As senhas não coincidem.');
+          setLoading(false);
+          return;
+        }
         await register(email, password);
         setError('Conta criada com sucesso! Você já pode fazer login.');
         setIsLogin(true);
+        setConfirmPassword('');
       }
     } catch (err) {
       setError(err.message || 'Ocorreu um erro ao autenticar.');
@@ -88,6 +95,26 @@ const Login = () => {
               />
             </div>
           </div>
+
+          {!isLogin && (
+            <div className="animate-in slide-in-from-top-2 duration-300">
+              <label className="block text-sm font-medium text-gray-400 mb-1">Confirmar Senha</label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <Lock className="h-5 w-5 text-gray-500" />
+                </div>
+                <input
+                  type="password"
+                  required
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  className="w-full bg-deepBlue border border-gray-700 rounded-lg pl-10 pr-4 py-2.5 text-white placeholder-gray-500 focus:outline-none focus:border-neonCyan focus:ring-1 focus:ring-neonCyan transition-all"
+                  placeholder="••••••••"
+                  minLength={6}
+                />
+              </div>
+            </div>
+          )}
 
           <button
             type="submit"
