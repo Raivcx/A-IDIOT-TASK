@@ -147,8 +147,8 @@ const Dashboard = () => {
                 <PieChart>
                   <Pie
                     data={chartsData.categoryData}
-                    innerRadius={80}
-                    outerRadius={110}
+                    innerRadius={60}
+                    outerRadius={90}
                     paddingAngle={8}
                     dataKey="value"
                   >
