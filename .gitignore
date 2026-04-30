@@ -17,6 +17,8 @@ dist-ssr
 .env
 .env.local
 .env.*.local
+.env.development
+.env.production
 
 # Editor directories and files
 .vscode/*
@@ -35,3 +37,10 @@ Desktop.ini
 
 # Testing
 /coverage
+
+# Build outputs
+dist/
+build/
+
+# Vite
+*.timestamp-*
