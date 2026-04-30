@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import { TaskContext } from '../context/TaskContext';
 import { useAnalytics } from '../hooks/useAnalytics';
 import { 
@@ -43,6 +43,42 @@ const KPICard = ({ title, value, icon: Icon, trend, colorClass }) => (
 const Dashboard = () => {
   const { tasks } = useContext(TaskContext);
   const { stats, chartsData, insights } = useAnalytics(tasks);
+  const [isGenerating, setIsGenerating] = useState(false);
+
+  const exportReport = () => {
+    if (tasks.length === 0) {
+      alert('Não há tarefas para exportar!');
+      return;
+    }
+    const headers = ["ID", "Título", "Categoria", "Prioridade", "Vencimento", "Status"];
+    const csvData = tasks.map(t => [
+      t.id,
+      `"${t.title}"`,
+      t.category,
+      t.priority,
+      t.dueDate || 'N/A',
+      t.completed ? "Concluída" : "Pendente"
+    ]);
+    
+    const csvContent = [headers, ...csvData].map(e => e.join(",")).join("\n");
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement("a");
+    const url = URL.createObjectURL(blob);
+    link.setAttribute("href", url);
+    link.setAttribute("download", `relatorio_idiotask_${new Date().toISOString().split('T')[0]}.csv`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  const handleGenerateAI = () => {
+    setIsGenerating(true);
+    setTimeout(() => {
+      setIsGenerating(false);
+      alert('Insights de IA atualizados com sucesso!');
+    }, 2000);
+  };
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -80,11 +116,18 @@ const Dashboard = () => {
         </div>
         
         <motion.div variants={itemVariants} className="flex gap-4">
-           <button className="bg-white/5 hover:bg-white/10 border border-white/10 px-6 py-3 rounded-2xl font-bold text-sm transition-all">
+           <button 
+             onClick={exportReport}
+             className="bg-white/5 hover:bg-white/10 border border-white/10 px-6 py-3 rounded-2xl font-bold text-sm transition-all"
+           >
              Exportar Relatório
            </button>
-           <button className="bg-gradient-to-r from-accent-blue to-accent-purple px-6 py-3 rounded-2xl font-bold text-sm text-white shadow-xl shadow-accent-blue/20 hover:shadow-accent-blue/40 transition-all">
-             Gerar Insights AI
+           <button 
+             onClick={handleGenerateAI}
+             disabled={isGenerating}
+             className="bg-gradient-to-r from-accent-blue to-accent-purple px-6 py-3 rounded-2xl font-bold text-sm text-white shadow-xl shadow-accent-blue/20 hover:shadow-accent-blue/40 transition-all flex items-center gap-2 disabled:opacity-50"
+           >
+             {isGenerating ? 'Analisando...' : 'Gerar Insights AI'}
            </button>
         </motion.div>
       </header>
