@@ -53,15 +53,15 @@ const Dashboard = () => {
     const headers = ["ID", "Título", "Categoria", "Prioridade", "Vencimento", "Status"];
     const csvData = tasks.map(t => [
       t.id,
-      `"${t.title}"`,
+      t.title,
       t.category,
       t.priority,
       t.dueDate || 'N/A',
       t.completed ? "Concluída" : "Pendente"
     ]);
     
-    const csvContent = [headers, ...csvData].map(e => e.join(",")).join("\n");
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const csvContent = [headers, ...csvData].map(e => e.join(";")).join("\n");
+    const blob = new Blob(["\uFEFF" + csvContent], { type: 'text/csv;charset=utf-8;' });
     const link = document.createElement("a");
     const url = URL.createObjectURL(blob);
     link.setAttribute("href", url);
