@@ -22,7 +22,7 @@ const Navbar = ({ currentView, setCurrentView }) => {
               <CheckSquare className="text-white group-hover:scale-110 transition-transform" size={24} strokeWidth={3} />
             </div>
           </div>
-          <span className="text-2xl font-black text-white tracking-tighter">Task<span className="text-accent-blue">Flow</span></span>
+          <span className="text-2xl font-black text-white tracking-tighter">IDIOTask</span>
         </div>
         
         {/* Nav Links */}

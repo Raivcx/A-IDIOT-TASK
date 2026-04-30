@@ -37,9 +37,9 @@ const Login = () => {
           <div className="w-12 h-12 rounded-xl bg-neonCyan/20 flex items-center justify-center mb-4">
             <CheckSquare className="text-neonCyan" size={28} />
           </div>
-          <h1 className="text-2xl font-bold text-white tracking-wide">TaskFlow</h1>
+          <h1 className="text-2xl font-bold text-white tracking-wide">IDIOTask</h1>
           <p className="text-gray-400 text-sm mt-1">
-            {isLogin ? 'Bem-vindo de volta!' : 'Crie sua conta no TaskFlow'}
+            {isLogin ? 'Bem-vindo de volta!' : 'Crie sua conta no IDIOTask'}
           </p>
         </div>
 
