@@ -7,12 +7,14 @@ import { AuthContext } from '../context/AuthContext';
 import { AnimatePresence, motion } from 'framer-motion';
 
 const Navbar = ({ currentView, setCurrentView }) => {
-  const { user, logout, updateProfile } = useContext(AuthContext);
+  const { user, logout, updateProfile, uploadAvatar } = useContext(AuthContext);
   const [showDropdown, setShowDropdown] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [newName, setNewName] = useState('');
   const [avatarUrl, setAvatarUrl] = useState('');
   const [isSaving, setIsSaving] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
+  const fileInputRef = useRef(null);
   const dropdownRef = useRef(null);
 
   useEffect(() => {
@@ -55,6 +57,22 @@ const Navbar = ({ currentView, setCurrentView }) => {
       alert("Erro ao atualizar perfil. Tente novamente.");
     } finally {
       setIsSaving(false);
+    }
+  };
+
+  const handleFileUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setIsUploading(true);
+    try {
+      const publicUrl = await uploadAvatar(file);
+      setAvatarUrl(publicUrl);
+    } catch (error) {
+      console.error("Erro no upload:", error);
+      alert("Falha ao carregar imagem.");
+    } finally {
+      setIsUploading(false);
     }
   };
 
@@ -197,14 +215,11 @@ const Navbar = ({ currentView, setCurrentView }) => {
               
               <div className="flex items-center justify-between mb-8">
                 <h2 className="text-3xl font-black text-white tracking-tight">Editar Perfil</h2>
-                <button onClick={() => setShowEditModal(false)} className="p-2 text-gray-500 hover:text-white transition-colors">
-                  <X size={24} />
-                </button>
               </div>
 
               <div className="space-y-6 relative z-10">
                 <div className="flex flex-col items-center gap-4 mb-8">
-                  <div className="w-24 h-24 rounded-[2rem] bg-gradient-to-br from-accent-blue to-accent-purple p-1 shadow-2xl overflow-hidden">
+                  <div className="w-24 h-24 rounded-[2rem] bg-gradient-to-br from-accent-blue to-accent-purple p-1 shadow-2xl overflow-hidden relative group">
                     <div className="w-full h-full bg-[#12131a] rounded-[1.8rem] flex items-center justify-center overflow-hidden">
                       {avatarUrl ? (
                         <img src={avatarUrl} alt="Preview" className="w-full h-full object-cover" />
@@ -212,6 +227,26 @@ const Navbar = ({ currentView, setCurrentView }) => {
                         <User className="text-white" size={40} />
                       )}
                     </div>
+                    {isUploading && (
+                      <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
+                        <Loader2 className="text-white animate-spin" size={24} />
+                      </div>
+                    )}
+                  </div>
+                  <div className="flex gap-4">
+                    <button 
+                      onClick={() => fileInputRef.current.click()}
+                      className="text-xs font-black text-accent-blue uppercase tracking-widest hover:text-white transition-colors"
+                    >
+                      Carregar Arquivo
+                    </button>
+                    <input 
+                      type="file" 
+                      ref={fileInputRef} 
+                      onChange={handleFileUpload} 
+                      className="hidden" 
+                      accept="image/*"
+                    />
                   </div>
                 </div>
 
