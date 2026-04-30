@@ -7,10 +7,18 @@ import { AuthContext } from '../context/AuthContext';
 import { AnimatePresence, motion } from 'framer-motion';
 
 const Navbar = ({ currentView, setCurrentView }) => {
-  const { user, logout } = useContext(AuthContext);
+  const { user, logout, updateProfile } = useContext(AuthContext);
   const [showDropdown, setShowDropdown] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
+  const [newName, setNewName] = useState('');
+  const [isSaving, setIsSaving] = useState(false);
   const dropdownRef = useRef(null);
+
+  useEffect(() => {
+    if (showEditModal) {
+      setNewName(user?.user_metadata?.display_name || user?.email?.split('@')[0] || '');
+    }
+  }, [showEditModal, user]);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -29,7 +37,21 @@ const Navbar = ({ currentView, setCurrentView }) => {
     { id: 'calendar', label: 'Calendário', icon: <CalendarIcon size={20} /> },
   ];
 
-  const userName = user?.email?.split('@')[0] || 'Usuário';
+  const userName = user?.user_metadata?.display_name || user?.email?.split('@')[0] || 'Usuário';
+
+  const handleSaveProfile = async () => {
+    if (!newName.trim()) return;
+    setIsSaving(true);
+    try {
+      await updateProfile({ display_name: newName });
+      setShowEditModal(false);
+    } catch (error) {
+      console.error("Erro ao atualizar perfil:", error);
+      alert("Erro ao atualizar perfil. Tente novamente.");
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   return (
     <>
@@ -182,7 +204,8 @@ const Navbar = ({ currentView, setCurrentView }) => {
                   <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest pl-2">Nome de Exibição</label>
                   <input 
                     type="text" 
-                    defaultValue={userName}
+                    value={newName}
+                    onChange={(e) => setNewName(e.target.value)}
                     className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-white font-bold focus:outline-none focus:border-accent-blue focus:ring-1 focus:ring-accent-blue transition-all"
                     placeholder="Seu nome"
                   />
@@ -196,9 +219,11 @@ const Navbar = ({ currentView, setCurrentView }) => {
                     Cancelar
                   </button>
                   <button 
-                    className="flex-1 px-8 py-4 bg-gradient-to-r from-accent-blue to-accent-purple rounded-2xl font-bold text-sm text-white shadow-xl shadow-accent-blue/20 transition-all"
+                    disabled={isSaving}
+                    onClick={handleSaveProfile}
+                    className="flex-1 px-8 py-4 bg-gradient-to-r from-accent-blue to-accent-purple rounded-2xl font-bold text-sm text-white shadow-xl shadow-accent-blue/20 transition-all disabled:opacity-50"
                   >
-                    Salvar
+                    {isSaving ? 'Salvando...' : 'Salvar'}
                   </button>
                 </div>
               </div>
