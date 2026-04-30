@@ -1,6 +1,8 @@
 import React, { useState, useContext } from 'react';
 import { AuthContext } from '../context/AuthContext';
-import { Lock, Mail, Loader2, CheckSquare } from 'lucide-react';
+import { Lock, Mail, Loader2, CheckSquare, X, CheckCircle2, Inbox } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useEffect } from 'react';
 
 const Login = () => {
   const { login, register } = useContext(AuthContext);
@@ -10,6 +12,7 @@ const Login = () => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showVerifyModal, setShowVerifyModal] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -26,9 +29,12 @@ const Login = () => {
           return;
         }
         await register(email, password);
-        setError('Conta criada com sucesso! Você já pode fazer login.');
-        setIsLogin(true);
+        // Clear fields immediately after success
+        setEmail('');
+        setPassword('');
         setConfirmPassword('');
+        setShowVerifyModal(true);
+        setIsLogin(true);
       }
     } catch (err) {
       setError(err.message || 'Ocorreu um erro ao autenticar.');
@@ -135,6 +141,42 @@ const Login = () => {
           </button>
         </div>
       </div>
+      </div>
+
+      {/* Verification Sent Modal */}
+      <AnimatePresence>
+        {showVerifyModal && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-6">
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="absolute inset-0 bg-black/80 backdrop-blur-md"
+            />
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+              className="relative w-full max-w-sm bg-spaceGray border border-gray-800 rounded-[2rem] p-10 text-center shadow-2xl"
+            >
+              <div className="w-20 h-20 bg-neonCyan/10 rounded-3xl flex items-center justify-center mx-auto mb-6">
+                <Inbox className="text-neonCyan" size={40} />
+              </div>
+              <h2 className="text-2xl font-bold text-white mb-4">Verifique seu E-mail</h2>
+              <p className="text-gray-400 text-sm leading-relaxed mb-8">
+                Enviamos um link de confirmação para o seu endereço de e-mail. Por favor, valide sua conta para continuar.
+              </p>
+              <button 
+                onClick={() => setShowVerifyModal(false)}
+                className="w-full bg-neonCyan text-spaceGray font-bold py-3 rounded-xl hover:bg-opacity-90 transition-all"
+              >
+                Entendi
+              </button>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
     </div>
   );
 };

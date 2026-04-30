@@ -1,7 +1,7 @@
 import React, { useContext, useState, useRef, useEffect } from 'react';
 import { 
   CheckSquare, BarChart2, Calendar as CalendarIcon, LogOut, Bell, User, 
-  Settings, UserCircle, Image as ImageIcon, X, ChevronDown, Sparkles, Loader2
+  Settings, UserCircle, Image as ImageIcon, X, ChevronDown, Sparkles, Loader2, Menu
 } from 'lucide-react';
 import { AuthContext } from '../context/AuthContext';
 import { AnimatePresence, motion } from 'framer-motion';
@@ -191,6 +191,26 @@ const Navbar = ({ currentView, setCurrentView }) => {
               </AnimatePresence>
             </div>
           </div>
+        </div>
+      </nav>
+
+      {/* Mobile Bottom Navigation */}
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-[#0a0b10]/80 backdrop-blur-2xl border-t border-white/5 z-50 px-6 py-3">
+        <div className="flex items-center justify-around">
+          {navItems.map(item => (
+            <button
+              key={item.id}
+              onClick={() => setCurrentView(item.id)}
+              className={`flex flex-col items-center gap-1 transition-all ${
+                currentView === item.id ? 'text-accent-blue' : 'text-gray-500'
+              }`}
+            >
+              <div className={`p-2 rounded-xl transition-all ${currentView === item.id ? 'bg-accent-blue/10' : ''}`}>
+                {item.icon}
+              </div>
+              <span className="text-[10px] font-black uppercase tracking-tighter">{item.label}</span>
+            </button>
+          ))}
         </div>
       </nav>
 

@@ -30,7 +30,13 @@ export const AuthProvider = ({ children }) => {
   };
 
   const register = async (email, password) => {
-    const { data, error } = await supabase.auth.signUp({ email, password });
+    const { data, error } = await supabase.auth.signUp({ 
+      email, 
+      password,
+      options: {
+        emailRedirectTo: 'https://a-idiot-task.vercel.app/'
+      }
+    });
     if (error) throw error;
     return data;
   };
