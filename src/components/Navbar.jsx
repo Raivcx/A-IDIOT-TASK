@@ -9,6 +9,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 const Navbar = ({ currentView, setCurrentView }) => {
   const { user, logout, updateProfile, uploadAvatar } = useContext(AuthContext);
   const [showDropdown, setShowDropdown] = useState(false);
+  const [showNotifications, setShowNotifications] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [newName, setNewName] = useState('');
   const [avatarUrl, setAvatarUrl] = useState('');
@@ -16,6 +17,7 @@ const Navbar = ({ currentView, setCurrentView }) => {
   const [isUploading, setIsUploading] = useState(false);
   const fileInputRef = useRef(null);
   const dropdownRef = useRef(null);
+  const notificationsRef = useRef(null);
 
   useEffect(() => {
     if (showEditModal) {
@@ -24,11 +26,14 @@ const Navbar = ({ currentView, setCurrentView }) => {
     }
   }, [showEditModal, user]);
 
-  // Close dropdown when clicking outside
+  // Close dropdowns when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setShowDropdown(false);
+      }
+      if (notificationsRef.current && !notificationsRef.current.contains(event.target)) {
+        setShowNotifications(false);
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
@@ -119,10 +124,78 @@ const Navbar = ({ currentView, setCurrentView }) => {
 
           {/* User Actions & Profile */}
           <div className="flex items-center gap-4">
-            <button className="relative p-3 text-gray-500 hover:text-white transition-colors bg-white/5 rounded-2xl border border-white/5">
-              <Bell size={20} />
-              <span className="absolute top-3 right-3 w-2 h-2 bg-accent-purple rounded-full border border-[#0a0b10] animate-pulse"></span>
-            </button>
+            <div className="relative" ref={notificationsRef}>
+              <button 
+                onClick={() => setShowNotifications(!showNotifications)}
+                className={`relative p-3 transition-all rounded-2xl border ${
+                  showNotifications 
+                    ? 'text-white bg-white/10 border-white/10' 
+                    : 'text-gray-500 hover:text-white bg-white/5 border-white/5'
+                }`}
+              >
+                <Bell size={20} />
+                <span className="absolute top-3 right-3 w-2 h-2 bg-accent-purple rounded-full border border-[#0a0b10] animate-pulse"></span>
+              </button>
+
+              <AnimatePresence>
+                {showNotifications && (
+                  <motion.div 
+                    initial={{ opacity: 0, y: 15, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                    className="absolute right-0 mt-4 w-80 bg-[#12131a] border border-white/10 rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.5)] overflow-hidden z-[100]"
+                  >
+                    <div className="p-6 border-b border-white/5 bg-gradient-to-br from-white/[0.02] to-transparent flex items-center justify-between">
+                      <h3 className="text-sm font-black text-white uppercase tracking-widest">Notificações</h3>
+                      <span className="px-2 py-0.5 bg-accent-blue/20 text-accent-blue text-[9px] font-black rounded-full uppercase">3 Novas</span>
+                    </div>
+
+                    <div className="max-h-[350px] overflow-y-auto custom-scrollbar">
+                      <div className="p-2 space-y-1">
+                        <button className="w-full flex items-start gap-4 p-4 hover:bg-white/5 rounded-[1.5rem] transition-all text-left">
+                          <div className="w-10 h-10 rounded-xl bg-accent-blue/10 flex items-center justify-center shrink-0">
+                            <Sparkles className="text-accent-blue" size={18} />
+                          </div>
+                          <div>
+                            <p className="text-xs font-bold text-white mb-1">Bem-vindo ao IDIOTask!</p>
+                            <p className="text-[10px] text-gray-500 leading-relaxed">Sua jornada para a produtividade extrema começa agora. Explore o Dashboard!</p>
+                            <p className="text-[9px] text-gray-600 font-bold mt-2 uppercase tracking-tighter">Agora mesmo</p>
+                          </div>
+                        </button>
+
+                        <button className="w-full flex items-start gap-4 p-4 hover:bg-white/5 rounded-[1.5rem] transition-all text-left">
+                          <div className="w-10 h-10 rounded-xl bg-accent-purple/10 flex items-center justify-center shrink-0">
+                            <CalendarIcon className="text-accent-purple" size={18} />
+                          </div>
+                          <div>
+                            <p className="text-xs font-bold text-white mb-1">Tarefas de Hoje</p>
+                            <p className="text-[10px] text-gray-500 leading-relaxed">Você tem 3 tarefas importantes agendadas para hoje. Não perca o foco!</p>
+                            <p className="text-[9px] text-gray-600 font-bold mt-2 uppercase tracking-tighter">Há 15 minutos</p>
+                          </div>
+                        </button>
+
+                        <button className="w-full flex items-start gap-4 p-4 hover:bg-white/5 rounded-[1.5rem] transition-all text-left">
+                          <div className="w-10 h-10 rounded-xl bg-green-500/10 flex items-center justify-center shrink-0">
+                            <CheckSquare className="text-green-500" size={18} />
+                          </div>
+                          <div>
+                            <p className="text-xs font-bold text-white mb-1">Meta Batida!</p>
+                            <p className="text-[10px] text-gray-500 leading-relaxed">Parabéns! Você concluiu todas as suas tarefas de ontem.</p>
+                            <p className="text-[9px] text-gray-600 font-bold mt-2 uppercase tracking-tighter">Há 2 horas</p>
+                          </div>
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className="p-4 bg-white/[0.02] border-t border-white/5">
+                      <button className="w-full py-3 text-[10px] font-black text-gray-500 hover:text-white uppercase tracking-widest transition-all">
+                        Limpar todas as notificações
+                      </button>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
             
             <div className="relative" ref={dropdownRef}>
               <motion.button 
