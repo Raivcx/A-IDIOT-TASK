@@ -141,7 +141,6 @@ const Login = () => {
           </button>
         </div>
       </div>
-      </div>
 
       {/* Verification Sent Modal */}
       <AnimatePresence>
